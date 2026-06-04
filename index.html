@@ -215,7 +215,7 @@
             const currentMode = appData.mode;
             let nextMode = 'Light';
             if (currentMode === 'Light') nextMode = 'Dark';
-            else if (currentMode === 'Dark') nextMode = 'Automatic';
+            else if (currentMode === 'Dark') nextMode = 'Auto';
             
             appData.mode = nextMode;
             saveLocalData();
@@ -255,7 +255,7 @@
             const themePill = document.getElementById('theme-pill');
             const backBtn = document.getElementById('header-back-btn');
             
-            themeLabel.textContent = `${appData.mode} Mode`;
+            themeLabel.textContent = `${appData.mode}`;
 
             if (appData.mode === 'Light') {
                 themeIcon.setAttribute('data-lucide', 'sun');
@@ -536,6 +536,7 @@
             `;
         }
 
+        // Saves current parameters
         function savePersonality() {
             const input = document.getElementById('personality-input');
             if (input) {
@@ -739,7 +740,7 @@
             for (let day = 1; day <= 31; day++) {
                 const count = (appData.monthlyEvents[day] || []).length;
                 cells += `
-                    <button onclick="openMonthlyEventsModal(${day})" class="aspect-square rounded-xl border-2 themed-border flex flex-col justify-between p-1.5 transition hover:scale-105 active:scale-95 relative bg-gray-200/40 dark:bg-zinc-800/20 hover:bg-gray-200/70 dark:hover:bg-zinc-800/50">
+                    <button onclick="openMonthlyEventsModal(${day})" class="aspect-square rounded-xl border-2 themed-border flex flex-col justify-between p-1.5 transition hover:scale-105 active:scale-95 relative bg-gray-200/40 dark:bg-zinc-800/20 hover:bg-gray-200/70 dark:hover:bg-[#1E1E1E]">
                         <span class="font-extrabold text-sm">${day}</span>
                         ${count > 0 ? `<div class="w-2.5 h-2.5 bg-sky-500 rounded-full self-end shadow shadow-sky-500/50"></div>` : ''}
                     </button>
@@ -807,7 +808,7 @@
                             </button>
                             <div id="month-dropdown" class="absolute left-0 right-0 mt-1.5 bg-[#E9ECEF] dark:bg-zinc-900 border-2 themed-border rounded-xl shadow-xl max-h-48 overflow-y-auto hidden z-20">
                                 ${months.map((m, idx) => `
-                                    <button onclick="selectMonth(${idx})" class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-zinc-800 transition">
+                                    <button onclick="selectMonth(${idx})" class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-zinc-800 transition text-gray-900 dark:text-gray-100">
                                         ${m.name}
                                     </button>
                                 `).join('')}
