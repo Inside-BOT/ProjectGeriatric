@@ -39,16 +39,14 @@
     <!-- Main Container (Shortened height with soft light-grey background) -->
     <div id="app-card" class="w-full max-w-lg bg-[#E9ECEF] rounded-3xl shadow-2xl border-4 border-[#1E3A5F] overflow-hidden theme-transition flex flex-col h-[620px] relative">
         
-        <!-- HEADER -->
-        <header id="app-header" class="bg-[#2D6CDF] text-white py-4 px-6 flex items-center justify-between border-b-2 border-[#1E3A5F] shrink-0">
-            <div class="flex items-center gap-3">
-                <button id="header-back-btn" class="p-1.5 hover:bg-white/20 rounded-lg transition hidden" onclick="navigateBack()">
-                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
-                </button>
-                <h1 id="header-title" class="text-2xl font-extrabold tracking-tight">Settings</h1>
-            </div>
+        <!-- HEADER (Restructured with relative positioning for elements) -->
+        <header id="app-header" class="bg-[#2D6CDF] text-white py-4 px-6 flex items-center justify-between border-b-2 border-[#1E3A5F] shrink-0 relative min-h-[64px]">
+            <button id="header-back-btn" class="absolute left-6 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-xl font-bold text-sm tracking-wide transition hidden active:scale-95 duration-150 z-10" onclick="navigateBack()">
+                Back
+            </button>
+            <h1 id="header-title" class="text-2xl font-extrabold tracking-tight transition-all duration-150">Settings</h1>
             <!-- Clickable theme pill cycles modes directly -->
-            <button id="theme-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition active:scale-95 duration-200" onclick="cycleThemeMode()">
+            <button id="theme-pill" class="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition active:scale-95 duration-200 z-10" onclick="cycleThemeMode()">
                 <i data-lucide="sun" id="theme-icon" class="w-3.5 h-3.5"></i>
                 <span id="theme-label">Light Mode</span>
             </button>
@@ -170,7 +168,7 @@
                 cardBg: '#1E1E1E',
                 primary: '#00E5FF',
                 text: '#FFFFFF',
-                border: '#00E5FF',
+                border: '#1B385E',
                 secondaryText: '#A0AEC0',
                 inputBg: '#2D2D2D'
             }
@@ -195,6 +193,7 @@
             }
         }
 
+        // Saves current parameters
         function saveLocalData() {
             localStorage.setItem('ai_assistant_settings_v5', JSON.stringify(appData));
         }
@@ -221,6 +220,7 @@
             appData.mode = nextMode;
             saveLocalData();
             applyTheme();
+            renderScreen();
             showToast(`${nextMode} display mode active`);
         }
 
@@ -253,6 +253,7 @@
             const themeLabel = document.getElementById('theme-label');
             const themeIcon = document.getElementById('theme-icon');
             const themePill = document.getElementById('theme-pill');
+            const backBtn = document.getElementById('header-back-btn');
             
             themeLabel.textContent = `${appData.mode} Mode`;
 
@@ -268,11 +269,21 @@
             if (mode === 'dark') {
                 header.classList.remove('text-white');
                 header.classList.add('text-black');
-                themePill.className = "flex items-center gap-2 bg-zinc-950 text-[#00E5FF] border-2 border-[#00E5FF] px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-widest shadow-[0_0_15px_rgba(0,229,255,0.6)] transition active:scale-95 duration-200";
+                themePill.className = "absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-zinc-950 text-[#00E5FF] border-2 border-[#00E5FF] px-4 py-2 rounded-full text-xs font-extrabold uppercase tracking-widest shadow-[0_0_15px_rgba(0,229,255,0.6)] transition active:scale-95 duration-200 z-10";
+                
+                // Back button reverted to px-4 py-1.5 padding and text-sm
+                const isHidden = backBtn.classList.contains('hidden');
+                backBtn.className = "absolute left-6 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-xl font-bold text-sm tracking-wide transition active:scale-95 duration-150 bg-[#1B385E] hover:bg-[#12243d] text-white border border-[#1B385E] shadow-[0_0_18px_rgba(0,229,255,0.6)] z-10";
+                if (isHidden) backBtn.classList.add('hidden');
             } else {
                 header.classList.add('text-white');
                 header.classList.remove('text-black');
-                themePill.className = "flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition active:scale-95 duration-200";
+                themePill.className = "absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition active:scale-95 duration-200 z-10";
+                
+                // Back button reverted to px-4 py-1.5 padding and text-sm
+                const isHidden = backBtn.classList.contains('hidden');
+                backBtn.className = "absolute left-6 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-xl font-bold text-sm tracking-wide transition active:scale-95 duration-150 bg-[#1E3A5F] hover:bg-[#12243d] text-[#E9ECEF] border border-[#1E3A5F] shadow-[0_0_18px_rgba(0,229,255,0.6)] z-10";
+                if (isHidden) backBtn.classList.add('hidden');
             }
 
             document.querySelectorAll('.btn-themed-primary').forEach(el => {
@@ -303,8 +314,12 @@
 
             if (currentPath.length > 1) {
                 backBtn.classList.remove('hidden');
+                // Title returned to left-alignment, with standard padding to stay clean alongside the back button
+                titleEl.className = "text-2xl font-extrabold tracking-tight text-left w-full pl-20 pr-28 transition-all duration-150";
             } else {
                 backBtn.classList.add('hidden');
+                // Left aligned title on root path
+                titleEl.className = "text-2xl font-extrabold tracking-tight text-left pr-28 transition-all duration-150";
             }
 
             content.innerHTML = '';
@@ -712,6 +727,7 @@
             `;
         }
 
+        // Opens modal popup for weekly setup
         function openWeeklyEventsModal(day) {
             activeModalScope = { type: 'weekly', key: day };
             openEventsModal(`${day} (Weekly Repeats)`);
@@ -945,10 +961,72 @@
         }
 
         function refreshModalEventsTable() {
-            const eventsList = getActiveEventsList();
+            const type = activeModalScope.type;
+            const key = activeModalScope.key;
+
+            let displayList = [];
+
+            if (type === 'single') {
+                // Fetch single events
+                const singleEvents = (appData.events[key] || []).map((ev, originalIdx) => ({
+                    ...ev,
+                    source: 'Single',
+                    originalIdx: originalIdx
+                }));
+                displayList.push(...singleEvents);
+
+                // Calculate date details
+                const parts = key.split('-');
+                const yr = parseInt(parts[0], 10);
+                const mo = parseInt(parts[1], 10);
+                const dy = parseInt(parts[2], 10);
+                const dateObj = new Date(yr, mo - 1, dy);
+                const dayName = daysOfWeek[dateObj.getDay() === 0 ? 6 : dateObj.getDay() - 1];
+                const mmDdStr = `${parts[1]}-${parts[2]}`;
+
+                // Fetch Daily
+                const daily = (appData.dailyEvents || []).map(ev => ({
+                    ...ev,
+                    source: 'Daily'
+                }));
+                displayList.push(...daily);
+
+                // Fetch Weekly
+                const weekly = (appData.weeklyEvents[dayName] || []).map(ev => ({
+                    ...ev,
+                    source: 'Weekly'
+                }));
+                displayList.push(...weekly);
+
+                // Fetch Monthly
+                const monthly = (appData.monthlyEvents[String(dy)] || []).map(ev => ({
+                    ...ev,
+                    source: 'Monthly'
+                }));
+                displayList.push(...monthly);
+
+                // Fetch Yearly
+                const yearly = (appData.yearlyEvents[mmDdStr] || []).map(ev => ({
+                    ...ev,
+                    source: 'Yearly'
+                }));
+                displayList.push(...yearly);
+
+                // Sort everything by time
+                displayList.sort((a, b) => a.time.localeCompare(b.time));
+            } else {
+                // For other views, just get standard list
+                const standardList = getActiveEventsList();
+                displayList = standardList.map((ev, originalIdx) => ({
+                    ...ev,
+                    source: 'Standard',
+                    originalIdx: originalIdx
+                }));
+            }
+
             const container = document.getElementById('modal-events-list');
 
-            if (eventsList.length === 0) {
+            if (displayList.length === 0) {
                 container.innerHTML = `
                     <div class="h-full flex flex-col items-center justify-center text-gray-400 py-8">
                         <i data-lucide="calendar-days" class="w-8 h-8 opacity-40 mb-1"></i>
@@ -965,21 +1043,41 @@
                         <tr class="border-b border-gray-100 dark:border-zinc-800 pb-2 text-gray-400">
                             <th class="py-1 font-bold uppercase w-16 text-gray-400">Time</th>
                             <th class="py-1 font-bold uppercase text-gray-400">Details</th>
-                            <th class="py-1 text-right w-10"></th>
+                            <th class="py-1 text-right w-16 text-gray-400 font-bold uppercase">Type</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
 
-            eventsList.forEach((ev, idx) => {
+            displayList.forEach((ev) => {
+                let actionColumn = '';
+                if (ev.source === 'Single' || ev.source === 'Standard') {
+                    actionColumn = `
+                        <button onclick="deleteEventFromModal(${ev.originalIdx})" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-1 rounded transition">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    `;
+                } else {
+                    // Recurring label
+                    let badgeColor = '';
+                    if (ev.source === 'Daily') badgeColor = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400';
+                    else if (ev.source === 'Weekly') badgeColor = 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400';
+                    else if (ev.source === 'Monthly') badgeColor = 'bg-sky-100 text-sky-800 dark:bg-sky-950/40 dark:text-sky-400';
+                    else if (ev.source === 'Yearly') badgeColor = 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950/40 dark:text-fuchsia-400';
+
+                    actionColumn = `
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${badgeColor}">
+                            ${ev.source}
+                        </span>
+                    `;
+                }
+
                 html += `
                     <tr class="border-b border-gray-50 dark:border-zinc-800/40 hover:bg-gray-50/50 dark:hover:bg-zinc-800/10">
                         <td class="py-2.5 font-extrabold text-[#2D6CDF] dark:text-[#00E5FF]">${ev.time}</td>
                         <td class="py-2.5 text-gray-700 dark:text-gray-200 font-semibold tracking-wide">${ev.message}</td>
-                        <td class="py-2.5 text-right">
-                            <button onclick="deleteEventFromModal(${idx})" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-1 rounded transition">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
+                        <td class="py-2.5 text-right flex items-center justify-end min-h-[36px]">
+                            ${actionColumn}
                         </td>
                     </tr>
                 `;
